@@ -5,6 +5,7 @@ extern "C" {
 #include <lualib.h>
 #include <lauxlib.h>
 }
+#include <iostream>
 
 bool Init(lua_State *L);
 void ShutDown();
@@ -24,3 +25,9 @@ bool GetWantTextInput();
 // Fonts
 void SetGlobalFontFromFileTTF(const char *path, float size_pixels,
         float spacing_x, float spacing_y, float oversample_x, float oversample_y);
+
+void RenderTextEditor(const char* name);
+void TextEditorMenu(const char* name);
+void TextEditorSave(const char* name, const char* path);
+void TextEditorSetText(const char* name, const char* text);
+std::string TextEditorGetText(const char* name);

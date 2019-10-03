@@ -20,6 +20,7 @@
 
 #include "libimgui/imgui.h"
 //#include "libimgui/imgui_dock.h"
+#include "libimgui/TextEditor.h"
 #include "imgui_impl.h"
 #include "wrap_imgui_impl.h"
 #include "dostring_cache.h"
@@ -254,6 +255,127 @@ static int w_AddFontFromFileTTF(lua_State *L) {
         return 1;
     }
 }
+
+/**
+ * TextEditor functions
+ */
+
+/*TextEditor* w_push_editor(lua_State * L) {
+  TextEditor * editor = (TextEditor*)lua_newuserdata(L, sizeof(TextEditor));
+  luaL_getmetatable(L, "TextEditor");
+  lua_setmetatable(L, -2);
+  lua_pushlightuserdata(L, editor);
+  lua_pushvalue(L, -2);
+  lua_settable(L, LUA_REGISTRYINDEX);
+  return editor;
+}
+
+static TextEditor* w_pop_editor(lua_State * L, int index) {
+  TextEditor* editor;
+  editor = (TextEditor*) luaL_checkudata(L, index, "TextEditor");
+  if (!editor) printf("error: bad type, expected TextEditor\n");
+  return editor;
+}*/
+
+#define LUA_TEXTEDITOR "imgui.TextEditor"
+
+/*static int w_NewTextEditor(lua_State * L) {
+  lua_newtable(L);
+  lua_pushvalue(L, 1);
+  lua_setmetatable(L, -2);
+
+  lua_pushvalue(L, 1);
+  lua_setfield(L, 1, "__index");
+
+  TextEditor** editor = (TextEditor**)lua_newuserdata(L, sizeof(TextEditor*));
+  *editor = new TextEditor();
+  (*editor)->SetText("hahahahaha");
+
+  luaL_getmetatable(L, LUA_TEXTEDITOR);
+  lua_setmetatable(L, -2);
+  lua_setfield(L, -2, "__self");
+  printf("Testando\n");
+
+  //TextEditor** editor = w_push_editor(L);
+
+  return 1;
+}
+
+static int w_RenderTextEditor(lua_State* L) {
+  TextEditor* editor = nullptr;
+  luaL_checktype(L, 1, LUA_TTABLE);
+  lua_getfield(L, 1, "__self");
+  editor = (TextEditor*)luaL_checkudata(L, -1, LUA_TEXTEDITOR);
+  if (!editor) printf("Error: bad type, expected TextEditor\n");
+  //std::cout << editor- << std::endl;
+  editor->Render("TextEditor");
+
+  return 0;
+}*/
+
+
+static int w_RenderTextEditor(lua_State * L) {
+  size_t size;
+  const char* name = luaL_checklstring(L, 1, &size);
+
+  //lua_pushboolean(L, BeginTextEditor(name));
+  RenderTextEditor(name);
+
+  return 0;
+}
+
+static int w_TextEditorMenu(lua_State * L) {
+  size_t size;
+  const char* name = luaL_checklstring(L, 1, &size);
+
+  TextEditorMenu(name);
+
+  return 0;
+}
+
+static int w_TextEditorSave(lua_State * L) {
+  size_t size;
+  const char* name = luaL_checklstring(L, 1, &size);
+  const char* path = luaL_checklstring(L, 2, &size);
+
+  TextEditorSave(name, path);
+ 
+  return 0;
+}
+
+static int w_TextEditorSetText(lua_State * L) {
+  size_t size;
+  const char* name = luaL_checklstring(L, 1, &size);
+  const char* text = luaL_optlstring(L, 2, "", &size);
+
+  TextEditorSetText(name, text);
+
+  return 0;
+}
+
+static int w_TextEditorGetText(lua_State * L) {
+  size_t size;
+  const char* name = luaL_checklstring(L, 1, &size);
+
+  std::string text = TextEditorGetText(name);
+
+  //std::cout << "-----------" << std::endl << text.c_str() << std::endl;
+
+  lua_pushstring(L, text.c_str());
+
+  return 1;
+}
+
+/*static int w_EndTextEditor(lua_State * L) {
+  EndTextEditor();
+  return 0;
+}*/
+/*static int w_RenderTextEditor(lua_State * L) {
+  TextEditor* editor = w_pop_editor(L, 1);
+  editor->Render();
+
+  return 0;
+}*/
 
 /*
 ** Wrapped functions
@@ -966,6 +1088,13 @@ static const struct luaL_Reg imguilib[] = {
 // Return value ordering
 { "SetReturnValueLast", w_SetReturnValueLast },
 
+// TextEditor
+{ "RenderTextEditor", w_RenderTextEditor },
+{ "TextEditorMenu", w_TextEditorMenu },
+{ "TextEditorSave", w_TextEditorSave },
+{ "TextEditorSetText", w_TextEditorSetText },
+{ "TextEditorGetText", w_TextEditorGetText },
+
 { NULL, NULL }
 };
 
@@ -1557,5 +1686,12 @@ extern "C" LOVE_IMGUI_EXPORT int luaopen_imgui(lua_State *L)
 	// imgui is at -2, love is at -1
 	DoStringCache::init(L, "love-imgui");
 	lua_pop(L, 1); // remove "love" table
+
+  luaL_newmetatable(L, LUA_TEXTEDITOR);
+  lua_pushvalue(L, -1);
+  lua_setfield(L, -1, "__index");
+  lua_pop(L, 1);
+
+  //luaL_newmetatable(L, "TextEditor");
 	return 1;
 }

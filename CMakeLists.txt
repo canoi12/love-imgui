@@ -24,6 +24,8 @@ ADD_LIBRARY(love-imgui
 	src/libimgui/stb_rect_pack.h
 	src/libimgui/stb_textedit.h
 	src/libimgui/stb_truetype.h
+    src/libimgui/TextEditor.h
+    src/libimgui/TextEditor.cpp
 	src/imgui_impl.cpp
 	src/wrap_imgui_impl.cpp
 	src/imgui_impl.h
